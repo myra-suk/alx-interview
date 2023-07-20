@@ -2,47 +2,35 @@
 """
 The module contains a script that reads stdin line by line and computes metrics
 """
+
 import sys
 
 
-status_codes = {
-    "200": 0,
-    "301": 0,
-    "400": 0,
-    "401": 0,
-    "403": 0,
-    "404": 0,
-    "405": 0,
-    "500": 0
-}
-
-file_size = 0
-
-
-def print_metrics():
-    """prints of the logs"""
+def print_stats(file_size, status_codes):
+    """
+    Print file size and status codes
+    """
     print("File size: {}".format(file_size))
-    for status in sorted(status_codes.keys()):
-        if status_codes[status]:
-            print("{}: {}".format(status, status_codes[status]))
+    for key, value in sorted(status_codes.items()):
+        if value != 0:
+            print("{}: {}".format(key, value))
 
 
 if __name__ == "__main__":
-    count = 0
+    file_size = 0
+    status_codes = {"200": 0, "301": 0, "400": 0, "401": 0,
+                    "403": 0, "404": 0, "405": 0, "500": 0}
+    counter = 0
     try:
         for line in sys.stdin:
-            try:
-                elems = line.split()
-                file_size += int(elems[-1])
-                if elems[-2] in status_codes:
-                    status_codes[elems[-2]] += 1
-            except Exception:
-                pass
-            if count == 9:
-                print_metrics()
-                count = -1
-            count += 1
+            counter += 1
+            tokens = line.split()
+            file_size += int(tokens[-1])
+            if tokens[-2] in status_codes:
+                status_codes[tokens[-2]] += 1
+            if counter % 10 == 0:
+                print_stats(file_size, status_codes)
+        print_stats(file_size, status_codes)
     except KeyboardInterrupt:
-        print_metrics()
+        print_stats(file_size, status_codes)
         raise
-    print_metrics()
