@@ -7,7 +7,8 @@ validUTF8
 def validUTF8(data):
     """Determines if a given data set represents a valid UTF-8 encoding"""
     count = 0
-
+    
+    utf8valid = 0
     for x in data:
 
         if 191 >= x >= 128:
